@@ -1,0 +1,62 @@
+<mat-toolbar color="primary" class="app-toolbar">
+  <span class="app-title">{{ title }}</span>
+  <span class="spacer"></span>
+  <nav class="navbar">
+    <button
+      mat-button
+      *ngFor="let item of menuItems"
+      [routerLink]="item.route"
+      routerLinkActive="active"
+      class="nav-button"
+    >
+      <mat-icon>{{ item.icon }}</mat-icon>
+      <span class="label">{{ item.label }}</span>
+    </button>
+  </nav>
+  
+  <!-- User Avatar (when logged in) -->
+  <div class="user-section" *ngIf="currentUser; else authButtons">
+    <button mat-button [matMenuTriggerFor]="userMenu" class="user-button">
+      <span class="user-info">
+        <div 
+          class="user-avatar" 
+          [style.background-color]="currentUser.profileColor || '#667eea'"
+        >
+          {{ getInitials() }}
+        </div>
+        <span class="user-name">{{ currentUser.displayName }}</span>
+      </span>
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item routerLink="/profile">
+        <mat-icon>person</mat-icon>
+        <span>Profile</span>
+      </button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </mat-menu>
+  </div>
+
+  <!-- Auth Buttons (when not logged in) -->
+  <ng-template #authButtons>
+    <div class="auth-buttons">
+      <a mat-button routerLink="/login" class="login-button">
+        <mat-icon>login</mat-icon>
+        <span>Sign In</span>
+      </a>
+      <a mat-raised-button color="accent" routerLink="/register" class="signup-button">
+        <mat-icon>person_add</mat-icon>
+        <span>Sign Up</span>
+      </a>
+    </div>
+  </ng-template>
+</mat-toolbar>
+
+<main class="app-main">
+  <router-outlet></router-outlet>
+</main>
+
+

@@ -1,0 +1,169 @@
+<div class="tasks-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>My Tasks</mat-card-title>
+      <mat-card-subtitle>
+        Completed: {{ getCompletedCount() }} / {{ getTotalCount() }}
+      </mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <!-- Search and Filter Section -->
+  <mat-card class="controls-card">
+    <div class="search-section">
+      <mat-form-field class="full-width">
+        <mat-label>Search tasks</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          type="text"
+          placeholder="Search by title or description..."
+          (input)="search($event.target.value)"
+        />
+      </mat-form-field>
+    </div>
+
+    <div class="filter-section">
+      <button
+        mat-raised-button
+        [color]="filterStatus === 'all' ? 'primary' : ''"
+        (click)="setFilter('all')"
+      >
+        All Tasks
+      </button>
+      <button
+        mat-raised-button
+        [color]="filterStatus === 'pending' ? 'primary' : ''"
+        (click)="setFilter('pending')"
+      >
+        Pending
+      </button>
+      <button
+        mat-raised-button
+        [color]="filterStatus === 'completed' ? 'primary' : ''"
+        (click)="setFilter('completed')"
+      >
+        Completed
+      </button>
+    </div>
+
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="showForm = !showForm"
+      class="add-button"
+    >
+      <mat-icon>add</mat-icon>
+      Add New Task
+    </button>
+  </mat-card>
+
+  <!-- Task Form -->
+  <mat-card *ngIf="showForm" class="form-card">
+    <mat-card-header>
+      <mat-card-title>{{ editingId ? 'Edit Task' : 'Create New Task' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="taskForm" (ngSubmit)="editingId ? updateTask() : addTask()">
+        <mat-form-field class="full-width">
+          <mat-label>Task Title *</mat-label>
+          <input matInput formControlName="title" required />
+          <mat-error *ngIf="taskForm.get('title')?.hasError('required')">
+            Title is required
+          </mat-error>
+          <mat-error *ngIf="taskForm.get('title')?.hasError('minlength')">
+            Title must be at least 3 characters
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" rows="3"></textarea>
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Priority</mat-label>
+          <mat-select formControlName="priority">
+            <mat-option value="low">Low</mat-option>
+            <mat-option value="medium">Medium</mat-option>
+            <mat-option value="high">High</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Due Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="dueDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button
+            type="submit"
+            mat-raised-button
+            color="primary"
+            [disabled]="taskForm.invalid"
+          >
+            {{ editingId ? 'Update' : 'Create' }}
+          </button>
+          <button type="button" mat-button (click)="resetForm()">Cancel</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tasks List -->
+  <div class="tasks-list">
+    <mat-card *ngIf="filteredTasks.length === 0" class="empty-state">
+      <p>No tasks found. {{ searchQuery ? 'Try a different search.' : 'Create your first task!' }}</p>
+    </mat-card>
+
+    <mat-card *ngFor="let task of filteredTasks" class="task-card">
+      <mat-card-content>
+        <div class="task-item">
+          <mat-checkbox
+            [checked]="task.completed"
+            (change)="toggleTask(task.id!)"
+            class="task-checkbox"
+          ></mat-checkbox>
+
+          <div class="task-content" [class.completed]="task.completed">
+            <h3>{{ task.title }}</h3>
+            <p *ngIf="task.description" class="task-description">{{ task.description }}</p>
+            <div class="task-meta">
+              <span
+                *ngIf="task.priority"
+                class="priority-badge"
+                [style.background-color]="getPriorityColor(task.priority)"
+              >
+                {{ task.priority | titlecase }}
+              </span>
+              <span *ngIf="task.dueDate" class="due-date">
+                <mat-icon>calendar_today</mat-icon>
+                {{ task.dueDate | date: 'MMM d, y' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="task-actions">
+            <button
+              mat-icon-button
+              (click)="editTask(task)"
+              matTooltip="Edit task"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteTask(task.id!)"
+              matTooltip="Delete task"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

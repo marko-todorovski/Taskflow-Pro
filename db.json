@@ -1,0 +1,208 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "email": "demo@taskflow.com",
+      "password": "demo1234",
+      "displayName": "Demo User",
+      "profileColor": "#667eea"
+    },
+    {
+      "id": "2",
+      "email": "admin@taskflow.com",
+      "password": "admin1234",
+      "displayName": "Admin User",
+      "profileColor": "#e74c3c"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "6",
+      "title": "Refactor authentication module",
+      "description": "Clean up and modularize the authentication code, improve error handling and add clear interfaces",
+      "completed": true,
+      "createdAt": "2026-01-28T09:15:00Z",
+      "priority": "high"
+    },
+    {
+      "id": "7",
+      "title": "Write unit tests for user service",
+      "description": "Add comprehensive unit tests covering success and error scenarios for user CRUD operations",
+      "completed": false,
+      "createdAt": "2026-01-28T10:30:00Z",
+      "priority": "medium"
+    },
+    {
+      "id": "8",
+      "title": "Design onboarding flow",
+      "description": "Create wireframes and acceptance criteria for new user onboarding experience",
+      "completed": false,
+      "createdAt": "2026-01-27T14:45:00Z",
+      "priority": "low"
+    },
+    {
+      "id": "9",
+      "title": "Fix production bug: payment retries",
+      "description": "Investigate and patch intermittent payment retry failures observed in production",
+      "completed": true,
+      "createdAt": "2026-01-26T22:05:00Z",
+      "priority": "urgent"
+    },
+    {
+      "id": "10",
+      "title": "Optimize image loading",
+      "description": "Implement responsive image sizes and lazy-loading to improve page performance",
+      "completed": false,
+      "createdAt": "2026-01-25T11:00:00Z",
+      "priority": "medium"
+    },
+    {
+      "id": "11",
+      "title": "Prepare release notes v1.12.0",
+      "description": "Compile PRs, bug fixes and breaking changes for the upcoming release notes",
+      "completed": false,
+      "createdAt": "2026-01-28T07:50:00Z",
+      "priority": "low"
+    },
+    {
+      "id": "12",
+      "title": "Conduct security audit",
+      "description": "Run dependency scanners, review access policies and remediate high-risk findings",
+      "completed": false,
+      "createdAt": "2026-01-24T16:20:00Z",
+      "priority": "high",
+      "dueDate": "2026-01-30T23:00:00.000Z"
+    },
+    {
+      "id": "13",
+      "title": "Set up end-to-end tests",
+      "description": "Add Cypress-based E2E tests for critical user flows and integrate with CI",
+      "completed": true,
+      "createdAt": "2026-01-23T09:40:00Z",
+      "priority": "medium"
+    },
+    {
+      "id": "14",
+      "title": "Cleanup unused CSS",
+      "description": "Remove deprecated CSS rules and reduce stylesheet size",
+      "completed": false,
+      "createdAt": "2026-01-22T12:10:00Z",
+      "priority": "low"
+    },
+    {
+      "id": "15",
+      "title": "Backup database",
+      "description": "Create an automated daily backup task and verify restore process",
+      "completed": false,
+      "createdAt": "2026-01-28T05:30:00Z",
+      "priority": "urgent"
+    },
+    {
+      "createdAt": "2026-01-30T21:00:19.915Z",
+      "title": "practice web development",
+      "description": "This task involves hands-on practice with web development skills, including designing, building, and testing web applications or websites. The goal is to strengthen understanding of front-end technologies (like HTML, CSS, JavaScript, and frameworks such as Angular, React, or Vue) and back-end concepts (such as REST APIs, databases, and server-side logic). It may also include experimenting with responsive design, debugging, and deploying small projects to gain practical experience.\n\nOptional Additions:\n\nCreate small projects or components to reinforce learning.\n\nImplement features such as forms, login pages, or data display.\n\nPractice integrating APIs or connecting to a mock backend (like JSON-server).",
+      "priority": "high",
+      "dueDate": "2035-10-30T23:00:00.000Z",
+      "completed": false,
+      "id": "Kh5GHcR"
+    }
+  ],
+  "habits": [
+    {
+      "id": "1",
+      "name": "Morning Exercise",
+      "description": "30 minutes of exercise in the morning to stay fit and energized",
+      "frequency": "daily",
+      "createdAt": "2026-01-15T08:00:00Z",
+      "currentStreak": 1,
+      "longestStreak": 15,
+      "lastCompletedDate": "2026-01-29T23:00:00.000Z",
+      "color": "#000000"
+    },
+    {
+      "id": "2",
+      "name": "Read a Book",
+      "description": "Read at least 20 pages of a book daily",
+      "frequency": "daily",
+      "createdAt": "2026-01-10T20:00:00Z",
+      "currentStreak": 1,
+      "longestStreak": 12,
+      "lastCompletedDate": "2026-01-29T23:00:00.000Z",
+      "color": "#2196F3"
+    },
+    {
+      "id": "3",
+      "name": "Meditation",
+      "description": "10 minutes of meditation for mental clarity and peace",
+      "frequency": "daily",
+      "createdAt": "2026-01-20T06:00:00Z",
+      "currentStreak": 3,
+      "longestStreak": 7,
+      "lastCompletedDate": "2026-01-28T07:00:00Z",
+      "color": "#9C27B0"
+    },
+    {
+      "id": "4",
+      "name": "Drink Water",
+      "description": "Drink at least 8 glasses of water throughout the day",
+      "frequency": "daily",
+      "createdAt": "2026-01-25T08:00:00Z",
+      "currentStreak": 1,
+      "longestStreak": 2,
+      "lastCompletedDate": "2026-01-29T23:00:00.000Z",
+      "color": "#00BCD4"
+    },
+    {
+      "id": "5",
+      "name": "Weekly Review",
+      "description": "Review the week's accomplishments and plan for next week",
+      "frequency": "weekly",
+      "createdAt": "2026-01-12T19:00:00Z",
+      "currentStreak": 1,
+      "longestStreak": 5,
+      "lastCompletedDate": "2026-01-29T23:00:00.000Z",
+      "color": "#FF9800"
+    },
+    {
+      "id": "6",
+      "name": "Team Meeting Prep",
+      "description": "Prepare agenda and materials for weekly team meetings",
+      "frequency": "weekly",
+      "createdAt": "2026-01-18T09:00:00Z",
+      "currentStreak": 5,
+      "longestStreak": 8,
+      "lastCompletedDate": "2026-01-27T23:00:00.000Z",
+      "color": "#F44336"
+    },
+    {
+      "createdAt": "2026-01-30T21:02:18.450Z",
+      "currentStreak": 0,
+      "longestStreak": 0,
+      "name": "Daily Coding Practice",
+      "description": "Spend at least 30–60 minutes every day writing code, solving problems, or building small projects. This habit helps improve problem-solving skills, reinforces programming concepts, and gradually builds confidence and proficiency in web development.",
+      "frequency": "daily",
+      "color": "#0010f0",
+      "id": "B-FMX-t"
+    }
+  ],
+  "statistics": [
+    {
+      "id": "1",
+      "date": "2026-01-28",
+      "tasksCompleted": 2,
+      "tasksCreated": 6,
+      "habitsCompleted": 4,
+      "habitsTotal": 6,
+      "averageStreak": 4
+    },
+    {
+      "id": "2",
+      "date": "2026-01-27",
+      "tasksCompleted": 1,
+      "tasksCreated": 5,
+      "habitsCompleted": 3,
+      "habitsTotal": 6,
+      "averageStreak": 4
+    }
+  ]
+}

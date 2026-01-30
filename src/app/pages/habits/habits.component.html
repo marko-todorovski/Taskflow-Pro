@@ -1,0 +1,172 @@
+<div class="habits-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>Habit Tracker</mat-card-title>
+      <mat-card-subtitle>Build and maintain your habits</mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <!-- Statistics -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ totalHabits }}</div>
+        <div class="stat-label">Total Habits</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ completedToday }}</div>
+        <div class="stat-label">Completed Today</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ averageStreak }}</div>
+        <div class="stat-label">Avg Streak</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Add Habit Button -->
+  <mat-card class="controls-card">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="showForm = !showForm"
+      class="add-button"
+    >
+      <mat-icon>add</mat-icon>
+      Add New Habit
+    </button>
+  </mat-card>
+
+  <!-- Habit Form -->
+  <mat-card *ngIf="showForm" class="form-card">
+    <mat-card-header>
+      <mat-card-title>{{ editingId ? 'Edit Habit' : 'Create New Habit' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="habitForm" (ngSubmit)="editingId ? updateHabit() : addHabit()">
+        <mat-form-field class="full-width">
+          <mat-label>Habit Name *</mat-label>
+          <input matInput formControlName="name" required />
+          <mat-error *ngIf="habitForm.get('name')?.hasError('required')">
+            Habit name is required
+          </mat-error>
+          <mat-error *ngIf="habitForm.get('name')?.hasError('minlength')">
+            Name must be at least 3 characters
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" rows="3"></textarea>
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Frequency *</mat-label>
+          <mat-select formControlName="frequency">
+            <mat-option value="daily">Daily</mat-option>
+            <mat-option value="weekly">Weekly</mat-option>
+            <mat-option value="monthly">Monthly</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Color</mat-label>
+          <input matInput type="color" formControlName="color" />
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button
+            type="submit"
+            mat-raised-button
+            color="primary"
+            [disabled]="habitForm.invalid"
+          >
+            {{ editingId ? 'Update' : 'Create' }}
+          </button>
+          <button type="button" mat-button (click)="resetForm()">Cancel</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Habits List -->
+  <div class="habits-list">
+    <mat-card *ngIf="habits.length === 0" class="empty-state">
+      <p>No habits yet. Create your first habit to get started!</p>
+    </mat-card>
+
+    <mat-card *ngFor="let habit of habits" class="habit-card">
+      <mat-card-content>
+        <div class="habit-item">
+          <div
+            class="habit-color-bar"
+            [style.background-color]="habit.color || '#667eea'"
+          ></div>
+
+          <div class="habit-content">
+            <h3>{{ habit.name }}</h3>
+            <p *ngIf="habit.description" class="habit-description">
+              {{ habit.description }}
+            </p>
+
+            <div class="habit-stats">
+              <div class="stat">
+                <span class="label">Current Streak:</span>
+                <span
+                  class="value"
+                  [style.color]="getStreakColor(habit.currentStreak)"
+                >
+                  {{ habit.currentStreak }} days
+                </span>
+              </div>
+              <div class="stat">
+                <span class="label">Longest Streak:</span>
+                <span class="value">{{ habit.longestStreak }} days</span>
+              </div>
+              <div class="stat">
+                <span class="label">Frequency:</span>
+                <span class="value">{{ habit.frequency | titlecase }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="habit-actions">
+            <button
+              mat-raised-button
+              [color]="isCompletedToday(habit) ? 'accent' : 'primary'"
+              (click)="completeHabit(habit.id!)"
+              [disabled]="isCompletedToday(habit)"
+              class="complete-button"
+            >
+              <mat-icon>{{ isCompletedToday(habit) ? 'check_circle' : 'check' }}</mat-icon>
+              {{ isCompletedToday(habit) ? 'Completed' : 'Complete Today' }}
+            </button>
+
+            <button
+              mat-icon-button
+              (click)="editHabit(habit)"
+              matTooltip="Edit habit"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteHabit(habit.id!)"
+              matTooltip="Delete habit"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

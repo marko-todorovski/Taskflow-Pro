@@ -1,0 +1,176 @@
+<div class="home-container">
+  <section class="hero-section">
+    <h1>Welcome to TaskFlow Pro</h1>
+    <p class="subtitle">Your personal productivity companion for managing tasks and building habits</p>
+  </section>
+
+  <!-- Dashboard Statistics -->
+  <section class="dashboard">
+    <mat-card class="dashboard-card tasks-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>task_alt</mat-icon>
+          Tasks Overview
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-item">
+          <div class="stat-number">{{ totalTasks }}</div>
+          <div class="stat-label">Total Tasks</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">{{ completedTasks }}</div>
+          <div class="stat-label">Completed</div>
+        </div>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="taskProgress"
+          class="progress-bar"
+        ></mat-progress-bar>
+        <p class="progress-text">{{ taskProgress.toFixed(0) }}% Complete</p>
+        <button
+          mat-raised-button
+          color="primary"
+          routerLink="/tasks"
+          class="action-button"
+        >
+          View All Tasks
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="dashboard-card habits-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>favorite</mat-icon>
+          Habits Overview
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-item">
+          <div class="stat-number">{{ totalHabits }}</div>
+          <div class="stat-label">Active Habits</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">{{ completedHabitsToday }}</div>
+          <div class="stat-label">Completed Today</div>
+        </div>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="habitsProgress"
+          color="accent"
+          class="progress-bar"
+        ></mat-progress-bar>
+        <p class="progress-text">{{ habitsProgress.toFixed(0) }}% Complete Today</p>
+        <button
+          mat-raised-button
+          color="accent"
+          routerLink="/habits"
+          class="action-button"
+        >
+          View All Habits
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <h2>Features</h2>
+    <div class="features-grid">
+      <mat-card class="feature-card">
+        <mat-card-header>
+          <mat-icon class="feature-icon">check_circle</mat-icon>
+          <mat-card-title>Task Management</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>Create, edit, and delete tasks with priorities and due dates. Track your progress with a comprehensive task list.</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="feature-card">
+        <mat-card-header>
+          <mat-icon class="feature-icon">trending_up</mat-icon>
+          <mat-card-title>Habit Tracking</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>Build positive habits with streak tracking. Monitor your consistency and longest streaks to stay motivated.</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="feature-card">
+        <mat-card-header>
+          <mat-icon class="feature-icon">search</mat-icon>
+          <mat-card-title>Search & Filter</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>Easily find tasks and habits with powerful search and filtering options to stay organized.</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="feature-card">
+        <mat-card-header>
+          <mat-icon class="feature-icon">storage</mat-icon>
+          <mat-card-title>Local Storage</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>All your data is saved locally in your browser. No account needed, complete privacy.</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="feature-card">
+        <mat-card-header>
+          <mat-icon class="feature-icon">phone_iphone</mat-icon>
+          <mat-card-title>Responsive Design</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>Works seamlessly on desktop, tablet, and mobile devices for productivity on the go.</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="feature-card">
+        <mat-card-header>
+          <mat-icon class="feature-icon">dashboard</mat-icon>
+          <mat-card-title>Dashboard</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>View your productivity stats and progress at a glance with an intuitive dashboard.</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </section>
+
+  <!-- Quick Links Section -->
+  <section class="quick-links-section">
+    <h2>Get Started</h2>
+    <div class="quick-links">
+      <button
+        mat-raised-button
+        color="primary"
+        routerLink="/tasks"
+        class="quick-link-button"
+      >
+        <mat-icon>add_task</mat-icon>
+        Create a Task
+      </button>
+      <button
+        mat-raised-button
+        color="accent"
+        routerLink="/habits"
+        class="quick-link-button"
+      >
+        <mat-icon>favorite</mat-icon>
+        Start a Habit
+      </button>
+      <button
+        mat-raised-button
+        routerLink="/about"
+        class="quick-link-button"
+      >
+        <mat-icon>info</mat-icon>
+        Learn More
+      </button>
+    </div>
+  </section>
+</div>
+
