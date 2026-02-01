@@ -2,7 +2,9 @@
 
 ## Overview
 
-TaskFlow Pro includes a mock backend using **json-server** to simulate REST API communication. The application supports both localStorage-based persistence and HTTP API communication.
+TaskFlow Pro uses **json-server** as its backend for REST API communication. The application requires the json-server to be running for full functionality.
+
+**Important:** The application requires json-server to be running. Without the backend server, the application will not function properly.
 
 ## Backend Setup
 
@@ -71,30 +73,6 @@ interface Habit {
 }
 ```
 
-## Service Integration
-
-### TaskService
-
-The `TaskService` now supports both localStorage and API communication:
-
-```typescript
-// The service automatically tries to use localStorage by default
-// If you have json-server running, you can enable API mode:
-taskService.setUseAPI(true);
-
-// Switch back to localStorage:
-taskService.setUseAPI(false);
-```
-
-### HabitService
-
-Similar to `TaskService`, the `HabitService` supports both modes:
-
-```typescript
-habitService.setUseAPI(true);  // Use API
-habitService.setUseAPI(false); // Use localStorage
-```
-
 ## Running Both Frontend and Backend
 
 ### Terminal 1 - Development Server
@@ -108,28 +86,6 @@ npm run server
 ```
 
 Then navigate to `http://localhost:4200/`
-
-## Storage Strategy
-
-The application uses a **hybrid approach**:
-
-1. **Primary Storage**: localStorage (default)
-   - Works offline
-   - Persists data immediately
-   - No network dependency
-
-2. **Secondary Storage**: json-server API
-   - Available for server-based operations
-   - Can be enabled with `setUseAPI(true)`
-   - Falls back to localStorage if API is unavailable
-
-## API Fallback Mechanism
-
-If the API server is not available:
-- Services automatically fall back to localStorage
-- No data is lost
-- Application continues to function normally
-- When API becomes available, data can be synchronized
 
 ## Sample Data
 
@@ -163,7 +119,7 @@ constructor(private http: HttpClient) { }
 
 ### Error Handling
 
-All HTTP requests include error handling with fallback to localStorage:
+All HTTP requests include error handling:
 
 ```typescript
 this.http.get<Task[]>(this.apiUrl)
@@ -171,31 +127,15 @@ this.http.get<Task[]>(this.apiUrl)
     tap(tasks => {
       // Update data
     }),
-    catchError(() => {
-      // Fall back to localStorage
-      return of(localData);
+    catchError(error => {
+      console.error('Error loading data from API:', error);
+      return throwError(() => error);
     })
   )
   .subscribe();
 ```
 
 ## Development Notes
-
-### Switching to API Mode
-
-To enable API communication:
-
-1. Start the json-server:
-   ```bash
-   npm run server
-   ```
-
-2. In your component, enable API mode:
-   ```typescript
-   constructor(private taskService: TaskService) {
-     this.taskService.setUseAPI(true);
-   }
-   ```
 
 ### Monitoring API Calls
 
@@ -240,11 +180,6 @@ curl -X DELETE http://localhost:3000/tasks/1
 - Ensure json-server is running: `npm run server`
 - Check if port 3000 is available
 - Verify no firewall blocks the connection
-
-### Data not syncing to API
-- Check browser console for errors
-- Verify API is running
-- Check that `setUseAPI(true)` was called
 
 ### Localhost API connection issues
 - On Windows, ensure you're using `http://localhost:3000` (not 127.0.0.1)
