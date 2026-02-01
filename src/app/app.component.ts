@@ -7,13 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatMenuModule } from '@angular/material/menu';
 import { filter } from 'rxjs/operators';
-
-interface User {
-  id: string;
-  email: string;
-  displayName: string;
-  profileColor?: string;
-}
+import { AuthService, User } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -42,22 +36,23 @@ export class AppComponent implements OnInit {
     { label: 'About', route: '/about', icon: 'info' }
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    this.loadUser();
+    // Subscribe to auth service for reactive user updates
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
     
     // Reload user on navigation (to catch login/logout changes)
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
-      this.loadUser();
+      this.currentUser = this.authService.getCurrentUser();
     });
-  }
-
-  loadUser(): void {
-    const userJson = sessionStorage.getItem('currentUser');
-    this.currentUser = userJson ? JSON.parse(userJson) : null;
   }
 
   getInitials(): string {
@@ -70,8 +65,6 @@ export class AppComponent implements OnInit {
   }
 
   logout(): void {
-    sessionStorage.removeItem('currentUser');
-    this.currentUser = null;
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 }

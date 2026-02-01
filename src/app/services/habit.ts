@@ -3,9 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, catchError, tap, finalize } from 'rxjs';
 import { throwError } from 'rxjs';
 import { ApiConfigService } from './api-config';
+import { AuthService } from './auth.service';
 
 export interface Habit {
   id?: string | number;
+  userId: string;
   name: string;
   description?: string;
   frequency: 'daily' | 'weekly' | 'monthly';
@@ -28,17 +30,34 @@ export class HabitService {
   constructor(
     private http: HttpClient,
     private apiConfig: ApiConfigService,
-    private injector: Injector
+    private injector: Injector,
+    private authService: AuthService
   ) {
-    this.loadHabits();
+    // Load habits when user logs in
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.loadHabits();
+      } else {
+        // Clear habits when user logs out
+        this.habitsSubject.next([]);
+      }
+    });
   }
 
   /**
    * Load all habits from the API on service initialization
+   * Filters habits by current user's userId
    */
   private loadHabits(): void {
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) {
+      console.warn('No user logged in, cannot load habits');
+      this.habitsSubject.next([]);
+      return;
+    }
+
     this.loadingSubject.next(true);
-    this.http.get<Habit[]>(this.apiConfig.getHabitsUrl())
+    this.http.get<Habit[]>(`${this.apiConfig.getHabitsUrl()}?userId=${userId}`)
       .pipe(
         tap(habits => {
           this.habitsSubject.next(habits);
@@ -70,8 +89,14 @@ export class HabitService {
   /**
    * Add a new habit to the API and update the observable
    */
-  addHabit(habit: Omit<Habit, 'id' | 'createdAt' | 'currentStreak' | 'longestStreak'>): Observable<Habit> {
+  addHabit(habit: Omit<Habit, 'id' | 'createdAt' | 'currentStreak' | 'longestStreak' | 'userId'>): Observable<Habit> {
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) {
+      return throwError(() => new Error('No user logged in'));
+    }
+
     const newHabit: Habit = {
+      userId,
       createdAt: new Date().toISOString(),
       currentStreak: 0,
       longestStreak: 0,
@@ -133,10 +158,10 @@ export class HabitService {
     return this.http.delete<void>(this.apiConfig.getHabitUrl(id))
       .pipe(
         tap(() => {
-          // Trigger statistics update
-          this.updateStatistics();
           const currentHabits = this.habitsSubject.getValue();
           this.habitsSubject.next(currentHabits.filter(h => h.id !== id));
+          // Trigger statistics update after removing from UI
+          this.updateStatistics();
         }),
         catchError(error => {
           console.error('Error deleting habit:', error);
@@ -302,8 +327,13 @@ export class HabitService {
    * Refresh habits from API
    */
   refresh(): Observable<Habit[]> {
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) {
+      return throwError(() => new Error('No user logged in'));
+    }
+
     this.loadingSubject.next(true);
-    return this.http.get<Habit[]>(this.apiConfig.getHabitsUrl())
+    return this.http.get<Habit[]>(`${this.apiConfig.getHabitsUrl()}?userId=${userId}`)
       .pipe(
         tap(habits => {
           this.habitsSubject.next(habits);

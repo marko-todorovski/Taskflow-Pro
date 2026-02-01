@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,14 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-
-interface User {
-  id: string;
-  email: string;
-  password: string;
-  displayName: string;
-  profileColor?: string;
-}
+import { AuthService, User } from '../../services/auth.service';
 
 @Component({
   selector: 'app-profile',
@@ -49,9 +41,9 @@ export class Profile implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private http: HttpClient,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private authService: AuthService
   ) {
     this.profileForm = this.fb.group({
       displayName: ['', [Validators.required, Validators.minLength(2)]],
@@ -61,21 +53,18 @@ export class Profile implements OnInit {
   }
 
   ngOnInit(): void {
-    // Get current user from session storage
-    const userJson = sessionStorage.getItem('currentUser');
-    if (!userJson) {
+    // Get current user from AuthService
+    this.currentUser = this.authService.getCurrentUser();
+    if (!this.currentUser) {
       this.router.navigate(['/login']);
       return;
     }
 
-    this.currentUser = JSON.parse(userJson);
-    if (this.currentUser) {
-      this.profileForm.patchValue({
-        displayName: this.currentUser.displayName,
-        email: this.currentUser.email
-      });
-      this.selectedColor = this.currentUser.profileColor || '#667eea';
-    }
+    this.profileForm.patchValue({
+      displayName: this.currentUser.displayName,
+      email: this.currentUser.email
+    });
+    this.selectedColor = this.currentUser.profileColor || '#667eea';
   }
 
   selectColor(color: string): void {
@@ -89,8 +78,7 @@ export class Profile implements OnInit {
 
     this.isLoading = true;
 
-    const updatedUser: any = {
-      ...this.currentUser,
+    const updates: any = {
       displayName: this.profileForm.value.displayName,
       email: this.profileForm.value.email,
       profileColor: this.selectedColor
@@ -98,14 +86,13 @@ export class Profile implements OnInit {
 
     // Only update password if provided
     if (this.profileForm.value.password) {
-      updatedUser.password = this.profileForm.value.password;
+      updates.password = this.profileForm.value.password;
     }
 
-    this.http.put(`http://localhost:3000/users/${this.currentUser.id}`, updatedUser).subscribe({
+    this.authService.updateProfile(this.currentUser.id, updates).subscribe({
       next: (user) => {
         this.isLoading = false;
-        this.currentUser = user as User;
-        sessionStorage.setItem('currentUser', JSON.stringify(user));
+        this.currentUser = user;
         this.snackBar.open('Profile updated successfully!', 'Close', {
           duration: 3000,
           horizontalPosition: 'center',
@@ -130,7 +117,6 @@ export class Profile implements OnInit {
   }
 
   logout(): void {
-    sessionStorage.removeItem('currentUser');
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 }

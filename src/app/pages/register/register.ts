@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -35,7 +35,7 @@ export class Register {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private http: HttpClient
+    private authService: AuthService
   ) {
     this.registerForm = this.fb.group({
       displayName: ['', [Validators.required, Validators.minLength(2)]],
@@ -60,8 +60,8 @@ export class Register {
 
     const { displayName, email, password } = this.registerForm.value;
 
-    // Check if email already exists
-    this.http.get<any[]>(`http://localhost:3000/users?email=${encodeURIComponent(email)}`).subscribe({
+    // Check if email already exists using AuthService
+    this.authService.checkEmailExists(email).subscribe({
       next: (users) => {
         if (users && users.length > 0) {
           this.isLoading = false;
@@ -69,16 +69,11 @@ export class Register {
           return;
         }
 
-        // Create new user
-        const newUser = {
-          email,
-          password,
-          displayName
-        };
-
-        this.http.post('http://localhost:3000/users', newUser).subscribe({
+        // Register new user - they will start with NO tasks or habits
+        this.authService.register(displayName, email, password).subscribe({
           next: () => {
             this.isLoading = false;
+            // Navigate to login after successful registration
             this.router.navigate(['/login']);
           },
           error: (err) => {

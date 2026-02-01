@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -35,7 +35,7 @@ export class Login {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private http: HttpClient
+    private authService: AuthService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -53,13 +53,12 @@ export class Login {
 
     const { email, password } = this.loginForm.value;
 
-    // Validate credentials against json-server
-    this.http.get<any[]>(`http://localhost:3000/users?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`).subscribe({
+    // Use AuthService for authentication
+    this.authService.login(email, password).subscribe({
       next: (users) => {
         this.isLoading = false;
         if (users && users.length > 0) {
-          // Store user in session storage
-          sessionStorage.setItem('currentUser', JSON.stringify(users[0]));
+          // Successful login, navigate to profile
           this.router.navigate(['/profile']);
         } else {
           this.errorMessage = 'Invalid email or password';

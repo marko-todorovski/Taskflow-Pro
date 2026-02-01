@@ -3,9 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, catchError, tap, finalize } from 'rxjs';
 import { throwError } from 'rxjs';
 import { ApiConfigService } from './api-config';
+import { AuthService } from './auth.service';
 
 export interface Task {
   id?: string | number;
+  userId: string;
   title: string;
   description?: string;
   completed: boolean;
@@ -26,17 +28,34 @@ export class TaskService {
   constructor(
     private http: HttpClient,
     private apiConfig: ApiConfigService,
-    private injector: Injector
+    private injector: Injector,
+    private authService: AuthService
   ) {
-    this.loadTasks();
+    // Load tasks when user logs in
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.loadTasks();
+      } else {
+        // Clear tasks when user logs out
+        this.tasksSubject.next([]);
+      }
+    });
   }
 
   /**
    * Load all tasks from the API on service initialization
+   * Filters tasks by current user's userId
    */
   private loadTasks(): void {
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) {
+      console.warn('No user logged in, cannot load tasks');
+      this.tasksSubject.next([]);
+      return;
+    }
+
     this.loadingSubject.next(true);
-    this.http.get<Task[]>(this.apiConfig.getTasksUrl())
+    this.http.get<Task[]>(`${this.apiConfig.getTasksUrl()}?userId=${userId}`)
       .pipe(
         tap(tasks => {
           this.tasksSubject.next(tasks);
@@ -68,8 +87,14 @@ export class TaskService {
   /**
    * Add a new task to the API and update the observable
    */
-  addTask(task: Omit<Task, 'id' | 'createdAt'>): Observable<Task> {
+  addTask(task: Omit<Task, 'id' | 'createdAt' | 'userId'>): Observable<Task> {
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) {
+      return throwError(() => new Error('No user logged in'));
+    }
+
     const newTask: Task = {
+      userId,
       createdAt: new Date().toISOString(),
       ...task
     };
@@ -129,10 +154,10 @@ export class TaskService {
     return this.http.delete<void>(this.apiConfig.getTaskUrl(id))
       .pipe(
         tap(() => {
-          // Trigger statistics update
-          this.updateStatistics();
           const currentTasks = this.tasksSubject.getValue();
           this.tasksSubject.next(currentTasks.filter(t => t.id !== id));
+          // Trigger statistics update after removing from UI
+          this.updateStatistics();
         }),
         catchError(error => {
           console.error('Error deleting task:', error);
@@ -213,8 +238,13 @@ export class TaskService {
    * Refresh tasks from API
    */
   refresh(): Observable<Task[]> {
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) {
+      return throwError(() => new Error('No user logged in'));
+    }
+
     this.loadingSubject.next(true);
-    return this.http.get<Task[]>(this.apiConfig.getTasksUrl())
+    return this.http.get<Task[]>(`${this.apiConfig.getTasksUrl()}?userId=${userId}`)
       .pipe(
         tap(tasks => {
           this.tasksSubject.next(tasks);
